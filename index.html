@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>jayson here xd</title>
+    <title>hello</title>
 
     <meta property="og:title" content="Im batman" />
     <meta property="og:description" content="guess who?" />
@@ -206,6 +206,7 @@
     </div>
 
     <script>
+         const pageTitles = ["cool", "the best", "mystery", "???"];
         let batmanSoundAudio;
         let isMuted = true; // Start as "conceptually" muted until overlay click
         let lastVolume = 0.5; // Default volume when unmuted
@@ -310,6 +311,14 @@
             // It will be updated when initializeAndPlaySound is called.
              volumeIcon.classList.remove('fa-volume-up');
              volumeIcon.classList.add('fa-volume-mute');
+
+             document.title = pageTitles[currentTitleIndex];
+
+            // Start title cycling
+            setInterval(() => {
+              currentTitleIndex = (currentTitleIndex + 1) % pageTitles.length;
+              document.title = pageTitles[currentTitleIndex];
+            }, 5000); // Change title every 5 seconds
         });
 
     </script>
