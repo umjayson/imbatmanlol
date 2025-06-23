@@ -69,25 +69,26 @@
       visibility: hidden;
     }
 
-    .proceed-button {
-      font-family: 'Courier Prime', monospace;
-      font-size: 2rem;
-      color: var(--gotham-text-primary);
-      background-color: transparent;
-      border: 2px solid var(--gotham-border); /* Border to be visible */
-      padding: 10px 20px;
-      cursor: pointer;
-      text-transform: uppercase;
-      letter-spacing: 2px;
-      opacity: 1;
-      transition: opacity 1s ease, background-color 0.3s, color 0.3s, border-color 0.3s;
-      pointer-events: auto;
-    }
-    .proceed-button:hover {
-      background-color: var(--gotham-accent-subtle);
-      border-color: var(--gotham-text-secondary);
-      color: var(--gotham-text-primary);
-    }
+      .proceed-button {
+        font-family: 'Courier Prime', monospace;
+        font-size: 2rem;
+        color: var(--gotham-text-primary);
+        background-color: transparent;
+        /* border: 2px solid var(--gotham-border); REMOVED */
+        padding: 10px 15px; /* Adjusted padding slightly */
+        cursor: pointer;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        opacity: 1;
+        transition: opacity 1s ease, color 0.3s, transform 0.3s; /* Added transform for subtle hover */
+        pointer-events: auto;
+      }
+      .proceed-button:hover {
+        /* background-color: var(--gotham-accent-subtle); REMOVED or make very subtle if desired */
+        color: #ffffff; /* Brighter white on hover for text-only feel */
+        transform: scale(1.05); /* Slight zoom on hover */
+      }
+    
     .hide-proceed {
       opacity: 0;
       pointer-events: none;
