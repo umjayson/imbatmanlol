@@ -3,15 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ilovemoney.lol • 404</title>
-        <meta property="og:title" content="ilovemoney" />
-        <meta property="og:description" content="No URL with this substring was found on ilovemoney.lol." />
-        <meta property="og:url" content="https://ilovemoney.lol" />
-        <meta name="twitter:card" content="summary_large_image">
-        <meta property="theme-color" content="#d11818">
-        <link rel="icon" href="ref/misc/logo.png" type="image/x-icon">
-    <link href="https://fonts.googleapis.com/css2?family=Courier+Prime&family=Roboto:wght@300&display=swap" rel="stylesheet">
+    <title>ilovemoney.lol • 404 Lost in Gotham</title>
+    <meta property="og:title" content="ilovemoney - 404 Lost in Gotham" />
+    <meta property="og:description" content="This path has vanished into the Gotham night." />
+    <meta property="og:url" content="https://ilovemoney.lol" />
+    <meta name="twitter:card" content="summary_large_image">
+    <meta property="theme-color" content="#050505"> {/* Very Dark */}
+    <link rel="icon" href="ref/misc/logo.png" type="image/x-icon"> {/* Batman-themed favicon */}
+    <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Roboto:wght@300;400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+
     <style>
+        :root {
+          --gotham-bg: #050505;
+          --gotham-surface: #121212;
+          --gotham-border: #282828;
+          --gotham-text-primary: #b0b0b0;
+          --gotham-text-secondary: #707070;
+          --gotham-error-red: #4d0a04; /* Deeper, darker red */
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -24,45 +35,134 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            background: linear-gradient(135deg, #0a0a0a, #1a1a1a);
-            background-image: url('ref/misc/oscar_cdn.png');
+            background-color: var(--gotham-bg);
+            background-image: url('/images/gotham-skyline-rain.jpg');
             background-size: cover;
             background-position: center;
             font-family: 'Courier Prime', 'Courier New', Courier, monospace;
             text-align: center;
-            color: #fff;
+            color: var(--gotham-text-primary);
+            overflow: hidden;
+            position: relative;
+        }
+
+        body::before { /* Dark overlay for mood */
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.75); /* Darker overlay */
+            z-index: 0;
+        }
+
+        .content-wrapper {
+            position: relative;
+            z-index: 1;
+            padding: 30px; /* More padding */
+            background-color: rgba(5, 5, 5, 0.85); /* Darker panel */
+            border-radius: 8px;
+            box-shadow: 0 0 25px rgba(0,0,0,0.6); /* Stronger shadow */
+            border: 1px solid var(--gotham-border);
         }
 
         .error-code {
-            font-size: 6rem;
-            color: #c72b1c;
-            font-family: Arial, sans-serif;
+            font-size: 7rem; /* Larger */
+            color: var(--gotham-error-red);
+            font-family: 'Impact', 'Arial Black', Gadget, sans-serif; /* More impactful */
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.8);
         }
 
         .message {
-            font-size: 2rem;
-            color: #e0e0e0;
-            margin-bottom: 20px;
+            font-size: 1.6rem;
+            color: var(--gotham-text-primary);
+            margin-bottom: 30px;
             font-family: 'Roboto', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
         }
 
-        .link-icon img {
-            width: 50px;
-            height: 50px;
+        .home-link {
+            display: inline-block;
             margin-top: 20px;
-            transition: transform 0.2s;
+            color: var(--gotham-text-secondary); /* Icon starts as secondary text color */
+            font-size: 2.2rem; 
+            transition: transform 0.3s ease, color 0.3s ease;
         }
 
-        .link-icon:hover img {
-            transform: scale(1.2);
+        .home-link:hover {
+            transform: scale(1.15);
+            color: var(--gotham-text-primary); /* Hover to primary text color */
+        }
+        
+        .home-link .link-text {
+            display: block;
+            font-size: 1rem;
+            margin-top: 8px;
+            color: var(--gotham-text-secondary);
+            font-family: 'Roboto', sans-serif;
+            transition: color 0.3s ease;
+        }
+        .home-link:hover .link-text {
+            color: var(--gotham-text-primary);
+        }
+
+        /* Rain Effect */
+        .rain-container {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          pointer-events: none;
+          z-index: -1; /* Behind the body::before overlay */
+          overflow: hidden;
+        }
+        .rain-drop {
+          position: absolute;
+          bottom: 100%;
+          width: 1px;
+          height: 60px;
+          background: linear-gradient(to bottom, rgba(100, 100, 100, 0), rgba(100, 100, 100, 0.15)); /* Darker rain */
+          animation: fall linear infinite;
+        }
+
+        @keyframes fall {
+          to {
+            transform: translateY(100vh);
+          }
         }
     </style>
 </head>
 <body>
-    <h1 class="error-code">404</h1>
-    <p class="message">not found</p>
-    <a href="https://ilovemoney.lol/" target="_blank" class="link-icon">
-        <img src="https://em-content.zobj.net/source/apple/391/link_1f517.png" alt="Link Icon">
-    </a>
+    <div class="rain-container" id="rainContainer"></div>
+    <div class="content-wrapper">
+        <h1 class="error-code">404</h1>
+        <p class="message">The Signal is Lost</p>
+        <a href="https://ilovemoney.lol/" target="_blank" class="home-link">
+            <i class="fas fa-bat"></i> 
+            <span class="link-text">Return to the Cave</span>
+        </a>
+    </div>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        const rainContainer = document.getElementById('rainContainer');
+        if (!rainContainer) return;
+
+        const numberOfDrops = 150; 
+        for (let i = 0; i < numberOfDrops; i++) {
+          const drop = document.createElement('div');
+          drop.classList.add('rain-drop');
+          drop.style.left = Math.random() * 100 + 'vw';
+          drop.style.animationDuration = (Math.random() * 0.4 + 0.4) + 's';
+          drop.style.animationDelay = Math.random() * 4 + 's';
+          drop.style.height = (Math.random() * 40 + 30) + 'px';
+          drop.style.opacity = Math.random() * 0.3 + 0.1;
+          rainContainer.appendChild(drop);
+        }
+      });
+    </script>
 </body>
 </html>
