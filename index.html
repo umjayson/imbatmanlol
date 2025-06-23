@@ -155,17 +155,6 @@
       gap: 15px;
       margin-bottom: 20px;
     }
-    .badge {
-      color: var(--gotham-text-secondary);
-      background-color: var(--gotham-surface);
-      padding: 5px 10px;
-      border-radius: 5px;
-      font-size: 0.9rem;
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      border: 1px solid var(--gotham-border);
-    }
     .badge .fa-star {
       color: var(--gotham-text-secondary); /* Star is now subtle grey */
     }
@@ -185,10 +174,27 @@
       transition: opacity 0.3s;
       border: 1px solid var(--gotham-border);
     }
-    .badge:hover .tooltip {
-      visibility: visible;
-      opacity: 1;
-    }
+          .badge {
+        color: var(--gotham-text-secondary);
+        background-color: var(--gotham-surface);
+        padding: 8px 12px; /* Slightly increased padding for a better feel */
+        border-radius: 5px; /* Or adjust as desired, e.g., 25px for pill shape */
+        font-size: 0.9rem;
+        display: flex;
+        align-items: center;
+        gap: 8px; /* Slightly increased gap */
+        border: 1px solid var(--gotham-border);
+        transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, transform 0.2s ease-out, box-shadow 0.3s ease; /* Added box-shadow to transition */
+        cursor: default; /* Indicate they are not primary actions but info */
+      }
+
+      .badge:hover {
+        background-color: var(--gotham-accent-subtle);
+        color: var(--gotham-text-primary);
+        border-color: var(--gotham-text-secondary);
+        transform: translateY(-2px) scale(1.03); /* Lift and slightly enlarge */
+        box-shadow: 0 4px 10px rgba(0,0,0,0.4); /* Enhanced shadow for more pop */
+      }
 
     .static-text {
       font-family: 'Courier Prime', monospace;
