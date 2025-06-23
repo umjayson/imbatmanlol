@@ -158,26 +158,8 @@
     .badge .fa-star {
       color: var(--gotham-text-secondary); /* Star is now subtle grey */
     }
-     .tooltip {
-        visibility: hidden;
-        background-color: var(--gotham-background);
-        color: var(--gotham-text-primary);
-        text-align: center;
-        border-radius: 6px;
-        padding: 8px 10px; /* Slightly adjusted padding */
-        position: absolute;
-        z-index: 10; /* Ensure it's above other elements */
-        bottom: 115%; /* Position it above the badge, adjust as needed */
-        left: 50%; /* Center horizontally */
-        transform: translateX(-50%); /* Fine-tune horizontal centering */
-        opacity: 0;
-        transition: opacity 0.3s ease, visibility 0.3s ease; /* Added visibility to transition */
-        border: 1px solid var(--gotham-border);
-        white-space: nowrap; /* Prevent text wrapping if tooltip content is short */
-        font-size: 0.85rem; /* Slightly smaller font for tooltip */
-        box-shadow: 0 2px 5px rgba(0,0,0,0.3); /* Add a subtle shadow to the tooltip */
-      }
-          .badge {
+      .badge {
+        position: relative; /* Add this if not already present */
         color: var(--gotham-text-secondary);
         background-color: var(--gotham-surface);
         padding: 8px 12px; /* Slightly increased padding for a better feel */
@@ -197,6 +179,26 @@
         border-color: var(--gotham-text-secondary);
         transform: translateY(-2px) scale(1.03); /* Lift and slightly enlarge */
         box-shadow: 0 4px 10px rgba(0,0,0,0.4); /* Enhanced shadow for more pop */
+      }
+
+      .tooltip {
+        visibility: hidden;
+        background-color: var(--gotham-background);
+        color: var(--gotham-text-primary);
+        text-align: center;
+        border-radius: 6px;
+        padding: 8px 10px; /* Slightly adjusted padding */
+        position: absolute;
+        z-index: 10; /* Ensure it's above other elements */
+        bottom: 115%; /* Position it above the badge, adjust as needed */
+        left: 50%; /* Center horizontally */
+        transform: translateX(-50%); /* Fine-tune horizontal centering */
+        opacity: 0;
+        transition: opacity 0.3s ease, visibility 0.3s ease; /* Added visibility to transition */
+        border: 1px solid var(--gotham-border);
+        white-space: nowrap; /* Prevent text wrapping if tooltip content is short */
+        font-size: 0.85rem; /* Slightly smaller font for tooltip */
+        box-shadow: 0 2px 5px rgba(0,0,0,0.3); /* Add a subtle shadow to the tooltip */
       }
 
     .static-text {
@@ -423,7 +425,7 @@
     let hasClicked = false;
     let isMuted = false;
     let lastVolume = 0.5;
-    let audio1, audio2;
+     let audio1, audio2, batmanSoundAudio;
 
     const overlay       = document.getElementById('overlay');
     const proceedButton = document.getElementById('proceedButton');
@@ -464,55 +466,60 @@
     }
 
     function playAudioSequence() {
-      audio1 = new Audio('ref/misc/start1.mp3'); 
-      audio2 = new Audio('ref/misc/end1.mp3');
-      audio1.volume = 0.5;
-      audio2.volume = 0.5;
-      audio2.loop = true;
-      audio1.play().catch(e => console.error("Error playing audio1:", e));
-      audio1.addEventListener('ended', () => {
-        audio2.play().catch(e => console.error("Error playing audio2:", e));
+     if (!batmanSoundAudio) { // Initialize only once
+          batmanSoundAudio = new Audio('ref/misc/batmansound.mp3');
+          batmanSoundAudio.loop = true;
+          // Set initial volume based on the main volume slider, if desired
+          // For now, let's use a fixed volume or the same as audio1/audio2
+          batmanSoundAudio.volume = volumeSlider ? parseFloat(volumeSlider.value) : 0.5; 
+          batmanSoundAudio.play().catch(e => console.error("Error playing batmanSoundAudio:", e));
+        } else if (batmanSoundAudio.paused) {
+          // If it was paused (e.g., by volume control), resume it
+          batmanSoundAudio.play().catch(e => console.error("Error resuming batmanSoundAudio:", e));
+        }
+    }
+
+    const volumeButton = document.getElementById('volume-button');
+    const volumeSlider = document.getElementById('volume-slider');
+
+ if (volumeButton) {
+      volumeButton.addEventListener('click', () => {
+        isMuted = !isMuted;
+        if (!isMuted) {
+          lastVolume = volumeSlider ? parseFloat(volumeSlider.value) : 0.5;
+          if (audio1) audio1.volume = 0;
+          if (audio2) audio2.volume = 0;
+          if (batmanSoundAudio) batmanSoundAudio.volume = 0;
+          volumeButton.textContent = 'Unmute';
+        } else {
+          const volume = volumeSlider ? parseFloat(volumeSlider.value) : 0.5;
+          lastVolume = volume;
+          if (audio1) audio1.volume = volume;
+          if (audio2) audio2.volume = volume;
+          if (batmanSoundAudio) batmanSoundAudio.volume = lastVolume;
+          volumeButton.textContent = 'Mute';
+        }
       });
     }
 
-    const volumeButton = document.getElementById('volumeButton');
-    const volumeSlider = document.getElementById('volumeSlider');
-
-    if (volumeButton && volumeSlider) {
-        volumeButton.addEventListener('click', () => {
-          if (!audio1 || !audio2) return;
-          if (!isMuted) {
-            lastVolume = parseFloat(volumeSlider.value);
-            volumeSlider.value = 0;
-            audio1.volume = 0;
-            audio2.volume = 0;
-            isMuted = true;
-            volumeButton.classList.replace('fa-volume-up', 'fa-volume-mute');
-          } else {
-            volumeSlider.value = lastVolume.toString();
-            audio1.volume = lastVolume;
-            audio2.volume = lastVolume;
-            isMuted = false;
-            volumeButton.classList.replace('fa-volume-mute', 'fa-volume-up');
-          }
-        });
-
-        volumeSlider.addEventListener('input', (e) => {
-          if (!audio1 || !audio2) return;
-          const volume = parseFloat(e.target.value);
-          if (volume === 0) {
-            isMuted = true;
-            volumeButton.classList.replace('fa-volume-up', 'fa-volume-mute');
-            audio1.volume = 0;
-            audio2.volume = 0;
-          } else {
-            isMuted = false;
-            volumeButton.classList.replace('fa-volume-mute', 'fa-volume-up');
-            audio1.volume = volume;
-            audio2.volume = volume;
-            lastVolume = volume;
-          }
-        });
+    if (volumeSlider) {
+      volumeSlider.addEventListener('input', () => {
+        const volume = parseFloat(volumeSlider.value);
+        if (volume === 0) {
+          if (audio1) audio1.volume = 0;
+          if (audio2) audio2.volume = 0;
+          if (batmanSoundAudio) batmanSoundAudio.volume = 0;
+          if (volumeButton) volumeButton.textContent = 'Unmute';
+          isMuted = true;
+        } else {
+          if (audio1) audio1.volume = volume;
+          if (audio2) audio2.volume = volume;
+          if (batmanSoundAudio) batmanSoundAudio.volume = volume;
+          if (volumeButton) volumeButton.textContent = 'Mute';
+          isMuted = false;
+        }
+        lastVolume = volume;
+      });
     }
     
     const phrases = [
