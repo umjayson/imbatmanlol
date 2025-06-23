@@ -23,11 +23,15 @@
             align-items: center;
             justify-content: center;
             min-height: 100vh;
-            overflow: hidden; /* Prevent scrollbars from overlay */
+            overflow: hidden; 
         }
         .content {
-            position: relative; /* Ensure content is above sound overlay if needed, though overlay will hide */
+            position: relative; 
             z-index: 1;
+            transition: filter 0.7s ease-in-out; /* Transition for unblurring */
+        }
+        .content-blur {
+            filter: blur(5px); /* Initial blur */
         }
         p {
             font-size: 18px;
@@ -65,7 +69,11 @@
             align-items: center;
             z-index: 200;
             cursor: pointer;
-            transition: opacity 0.5s ease;
+            transition: opacity 0.5s ease, visibility 0.5s ease; /* Added visibility */
+        }
+        #soundStartOverlay.hidden { /* Class to hide overlay */
+            opacity: 0;
+            visibility: hidden;
         }
         #soundStartOverlay p {
             font-size: 24px;
@@ -83,34 +91,34 @@
             top: 20px;
             right: 20px;
             z-index: 100;
-            width: 40px; /* Initial width for icon only */
+            width: 40px; 
             height: 40px;
             background: rgba(30, 30, 30, 0.7);
             backdrop-filter: blur(5px);
-            border-radius: 20px; /* More rounded */
+            border-radius: 20px; 
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
             border: 1px solid #222;
-            overflow: hidden; /* Important for hiding slider initially */
+            overflow: hidden; 
             display: flex;
-            align-items: center; /* Vertically center items */
+            align-items: center; 
             transition: width 0.3s ease-in-out, background-color 0.3s ease;
-            padding: 0; /* Remove padding that might offset */
+            padding: 0; 
         }
         .volume-control:hover {
-            width: 160px; /* Expanded width */
+            width: 160px; 
             background: rgba(50, 50, 50, 0.8);
         }
 
         .volume-button-wrapper {
-            min-width: 40px; /* Ensure it takes up its space */
+            min-width: 40px; 
             height: 100%;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            flex-shrink: 0; /* Prevent shrinking */
+            flex-shrink: 0; 
         }
-        .volume-icon { /* Target the <i> tag directly */
+        .volume-icon { 
             font-size: 1.1rem;
             color: #ccc;
             transition: color 0.2s ease;
@@ -122,12 +130,12 @@
         .volume-slider-container {
             display: flex;
             align-items: center;
-            width: 0; /* Initially hidden */
+            width: 0; 
             overflow: hidden;
-            transition: width 0.3s ease-in-out 0.05s; /* Slight delay for slider appearance */
+            transition: width 0.3s ease-in-out 0.05s; 
         }
         .volume-control:hover .volume-slider-container {
-            width: 120px; /* Width for slider and its padding */
+            width: 120px; 
         }
 
         input[type="range"].volume-slider {
@@ -135,9 +143,9 @@
             appearance: none;
             background: transparent;
             cursor: pointer;
-            width: 100px; /* Actual width of the slider input */
-            margin-left: 10px; /* Space from icon */
-            padding: 0; /* Remove any default padding */
+            width: 100px; 
+            margin-left: 10px; 
+            padding: 0; 
         }
         input[type="range"].volume-slider::-webkit-slider-runnable-track {
             background: #444;
@@ -171,10 +179,10 @@
 <body>
     <div id="soundStartOverlay">
         <p>🔊</p>
-        <span>Click to enable sound</span>
+        <span>Click to enter</span>
     </div>
 
-    <div class="content">
+    <div class="content content-blur" id="mainContent"> {/* Added ID and initial blur class */}
         <p>welcome to jayson's site</p>
         <p>idk what to type here,<br> not a lot going on</p>
         <p><a href="http://ilovemoney.lol/">ilovemoney.lol/</a> <span class="folder">📁</span> <span class="icon">👤</span></p>
@@ -182,7 +190,7 @@
 
     <div class="volume-control" id="volumeControlContainer">
         <div class="volume-button-wrapper" id="volumeButton">
-            <i class="fas fa-volume-mute volume-icon"></i> <!-- Start muted as sound isn't playing yet -->
+            <i class="fas fa-volume-mute volume-icon"></i> 
         </div>
         <div class="volume-slider-container">
             <input
@@ -192,17 +200,18 @@
                 min="0"
                 max="1"
                 step="0.01"
-                value="0" <!-- Start at 0 as sound is initially off/muted -->
+                value="0.5" <!-- Default to 0.5, but will be unmuted -->
             />
         </div>
     </div>
 
     <script>
         let batmanSoundAudio;
-        let isMuted = true; // Sound starts as muted until user interaction
+        let isMuted = true; // Start as "conceptually" muted until overlay click
         let lastVolume = 0.5; // Default volume when unmuted
 
         const soundStartOverlay = document.getElementById('soundStartOverlay');
+        const mainContent = document.getElementById('mainContent');
         const volumeControlContainer = document.getElementById('volumeControlContainer');
         const volumeButton = document.getElementById('volumeButton');
         const volumeIcon = volumeControlContainer.querySelector('.volume-icon');
@@ -212,60 +221,52 @@
             if (!batmanSoundAudio) {
                 batmanSoundAudio = new Audio('ref/misc/batmansound.mp3');
                 batmanSoundAudio.loop = true;
-                
-                // If was previously unmuted by slider before sound init, use that volume
-                batmanSoundAudio.volume = isMuted ? 0 : lastVolume; 
-                volumeSlider.value = isMuted ? 0 : lastVolume;
-
-                batmanSoundAudio.play().then(() => {
-                    console.log("Batman sound started successfully.");
-                    if (!isMuted) {
-                        volumeIcon.classList.remove('fa-volume-mute');
-                        volumeIcon.classList.add('fa-volume-up');
-                    } else {
-                         volumeIcon.classList.remove('fa-volume-up');
-                        volumeIcon.classList.add('fa-volume-mute');
-                    }
-                }).catch(error => {
-                    console.error("Error playing batmanSoundAudio:", error);
-                    isMuted = true; // Ensure state reflects reality
-                    volumeIcon.classList.remove('fa-volume-up');
-                    volumeIcon.classList.add('fa-volume-mute');
-                    volumeSlider.value = 0;
-                });
-            } else if (batmanSoundAudio.paused && !isMuted) {
-                batmanSoundAudio.volume = lastVolume;
-                batmanSoundAudio.play().catch(e => console.error("Error resuming batmanSoundAudio:", e));
-                volumeIcon.classList.remove('fa-volume-mute');
-                volumeIcon.classList.add('fa-volume-up');
             }
+            
+            isMuted = false; // Unmute when overlay is clicked
+            batmanSoundAudio.volume = lastVolume; 
+            volumeSlider.value = lastVolume;
+            volumeIcon.classList.remove('fa-volume-mute');
+            volumeIcon.classList.add('fa-volume-up');
+
+            batmanSoundAudio.play().then(() => {
+                console.log("Batman sound started successfully.");
+            }).catch(error => {
+                console.error("Error playing batmanSoundAudio:", error);
+                // If play fails, revert to muted state visually
+                isMuted = true;
+                volumeIcon.classList.remove('fa-volume-up');
+                volumeIcon.classList.add('fa-volume-mute');
+                volumeSlider.value = 0;
+            });
+            
+            // Unblur content
+            mainContent.classList.remove('content-blur');
+
             // Hide overlay
-            soundStartOverlay.style.opacity = '0';
-            setTimeout(() => {
-                soundStartOverlay.style.display = 'none';
-            }, 500); // Match CSS transition
+            soundStartOverlay.classList.add('hidden');
         }
 
         soundStartOverlay.addEventListener('click', initializeAndPlaySound);
 
         if (volumeButton && volumeSlider && volumeIcon) {
             volumeButton.addEventListener('click', () => {
-                if (!batmanSoundAudio) { // If sound not initialized, clicking mute should init and play (muted if was muted)
-                    isMuted = !isMuted; // Toggle intended state
-                    lastVolume = isMuted ? 0 : 0.5; // Set lastVolume based on new state
-                    initializeAndPlaySound();
+                if (!batmanSoundAudio) { // If sound not initialized by overlay click yet
+                    // Optionally, you could trigger initializeAndPlaySound here too,
+                    // or just let the overlay be the only way to start.
+                    // For now, let's assume overlay must be clicked first.
+                    console.warn("Sound not initialized. Click the main screen first.");
                     return;
                 }
 
                 isMuted = !isMuted;
                 if (isMuted) {
-                    // lastVolume = batmanSoundAudio.volume; // Already saved or default
                     batmanSoundAudio.volume = 0;
                     volumeIcon.classList.remove('fa-volume-up');
                     volumeIcon.classList.add('fa-volume-mute');
                     volumeSlider.value = 0;
                 } else {
-                    batmanSoundAudio.volume = lastVolume > 0 ? lastVolume : 0.1; // Restore last known volume or a small default
+                    batmanSoundAudio.volume = lastVolume > 0 ? lastVolume : 0.1; 
                     volumeIcon.classList.remove('fa-volume-mute');
                     volumeIcon.classList.add('fa-volume-up');
                     volumeSlider.value = lastVolume > 0 ? lastVolume : 0.1;
@@ -274,13 +275,12 @@
 
             volumeSlider.addEventListener('input', (e) => {
                 const newVolume = parseFloat(e.target.value);
-                lastVolume = newVolume; // Always update lastVolume
+                lastVolume = newVolume; 
 
                 if (!batmanSoundAudio) {
-                     isMuted = newVolume === 0;
-                    // Don't initialize sound just by dragging slider if overlay not clicked
-                    // User must click overlay first. Slider will just set the intended volume.
-                    if (newVolume === 0) {
+                    // Update intended state even if sound not playing yet
+                    isMuted = newVolume === 0;
+                     if (isMuted) {
                         volumeIcon.classList.remove('fa-volume-up');
                         volumeIcon.classList.add('fa-volume-mute');
                     } else {
@@ -303,16 +303,13 @@
             });
         }
         
-        // Set initial state of volume slider and icon
+        // Set initial state of volume slider and icon (conceptually muted)
         document.addEventListener('DOMContentLoaded', () => {
-            volumeSlider.value = isMuted ? 0 : lastVolume;
-            if (isMuted) {
-                volumeIcon.classList.remove('fa-volume-up');
-                volumeIcon.classList.add('fa-volume-mute');
-            } else {
-                volumeIcon.classList.remove('fa-volume-mute');
-                volumeIcon.classList.add('fa-volume-up');
-            }
+            volumeSlider.value = lastVolume; // Set slider to default unmuted level
+            // Icon starts as mute because sound isn't playing yet.
+            // It will be updated when initializeAndPlaySound is called.
+             volumeIcon.classList.remove('fa-volume-up');
+             volumeIcon.classList.add('fa-volume-mute');
         });
 
     </script>
