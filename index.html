@@ -10,23 +10,24 @@
     <script disable-devtool-auto src="https://cdn.jsdelivr.net/npm/disable-devtool"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
 
-
     <style>
         body {
             background-color: black;
             color: white;
             font-family: monospace;
             text-align: center;
-            padding: 20px; /* Adjusted padding */
+            padding: 20px;
             margin: 0;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             min-height: 100vh;
+            overflow: hidden; /* Prevent scrollbars from overlay */
         }
         .content {
-            /* margin-top: 20%; Removed to allow flex centering */
+            position: relative; /* Ensure content is above sound overlay if needed, though overlay will hide */
+            z-index: 1;
         }
         p {
             font-size: 18px;
@@ -50,196 +51,268 @@
             color: grey;
         }
 
+        /* Sound Start Overlay */
+        #soundStartOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 200;
+            cursor: pointer;
+            transition: opacity 0.5s ease;
+        }
+        #soundStartOverlay p {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        #soundStartOverlay span {
+            font-size: 18px;
+            color: #888;
+        }
+
+
         /* Volume Control Styles */
         .volume-control {
             position: fixed;
             top: 20px;
-            right: 20px; /* Positioned to the top right */
+            right: 20px;
             z-index: 100;
-            width: 40px;
+            width: 40px; /* Initial width for icon only */
             height: 40px;
-            background: rgba(50, 50, 50, 0.5); /* Semi-transparent dark grey */
+            background: rgba(30, 30, 30, 0.7);
             backdrop-filter: blur(5px);
-            border-radius: 10px; /* Rounded corners */
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-            border: 1px solid #444;
-            overflow: hidden;
-            transition: width 0.3s ease, background-color 0.3s ease;
-            display: flex; /* For aligning icon */
-            align-items: center; /* Center icon vertically */
-            padding-left: 0; /* Reset padding for icon centering */
+            border-radius: 20px; /* More rounded */
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+            border: 1px solid #222;
+            overflow: hidden; /* Important for hiding slider initially */
+            display: flex;
+            align-items: center; /* Vertically center items */
+            transition: width 0.3s ease-in-out, background-color 0.3s ease;
+            padding: 0; /* Remove padding that might offset */
         }
         .volume-control:hover {
-            width: 150px; /* Expand on hover */
-            background: rgba(70, 70, 70, 0.7);
+            width: 160px; /* Expanded width */
+            background: rgba(50, 50, 50, 0.8);
         }
+
         .volume-button-wrapper {
-            width: 40px; /* Fixed width for the icon part */
+            min-width: 40px; /* Ensure it takes up its space */
             height: 100%;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
+            flex-shrink: 0; /* Prevent shrinking */
         }
-        .volume-button {
-            font-size: 1.1rem; /* Adjusted size */
+        .volume-icon { /* Target the <i> tag directly */
+            font-size: 1.1rem;
             color: #ccc;
             transition: color 0.2s ease;
         }
-        .volume-button:hover {
+        .volume-button-wrapper:hover .volume-icon {
             color: white;
         }
-        .volume-slider {
-            width: 90px; /* Width of the slider part */
-            margin-left: 10px; /* Space between button and slider */
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s ease 0.1s; /* Delayed opacity transition */
+
+        .volume-slider-container {
+            display: flex;
+            align-items: center;
+            width: 0; /* Initially hidden */
+            overflow: hidden;
+            transition: width 0.3s ease-in-out 0.05s; /* Slight delay for slider appearance */
         }
-        .volume-control:hover .volume-slider {
-            opacity: 1;
-            pointer-events: auto;
+        .volume-control:hover .volume-slider-container {
+            width: 120px; /* Width for slider and its padding */
         }
-        /* Basic slider styling */
+
         input[type="range"].volume-slider {
             -webkit-appearance: none;
             appearance: none;
             background: transparent;
             cursor: pointer;
+            width: 100px; /* Actual width of the slider input */
+            margin-left: 10px; /* Space from icon */
+            padding: 0; /* Remove any default padding */
         }
         input[type="range"].volume-slider::-webkit-slider-runnable-track {
-            background: #555;
+            background: #444;
             height: 4px;
             border-radius: 2px;
         }
         input[type="range"].volume-slider::-moz-range-track {
-            background: #555;
+            background: #444;
             height: 4px;
             border-radius: 2px;
         }
         input[type="range"].volume-slider::-webkit-slider-thumb {
             -webkit-appearance: none;
             appearance: none;
-            margin-top: -4px; /* Adjust to center thumb on track */
+            margin-top: -4px;
             background-color: #bbb;
             height: 12px;
             width: 12px;
             border-radius: 50%;
-            border: 1px solid #333;
+            border: 1px solid #222;
         }
         input[type="range"].volume-slider::-moz-range-thumb {
             background-color: #bbb;
             height: 12px;
             width: 12px;
             border-radius: 50%;
-            border: 1px solid #333;
+            border: 1px solid #222;
         }
-
     </style>
 </head>
 <body>
+    <div id="soundStartOverlay">
+        <p>🔊</p>
+        <span>Click to enable sound</span>
+    </div>
+
     <div class="content">
-        <p>hi</p>
+        <p>welcome to jayson's site</p>
         <p>idk what to type here,<br> not a lot going on</p>
         <p><a href="http://ilovemoney.lol/">ilovemoney.lol/</a> <span class="folder">📁</span> <span class="icon">👤</span></p>
     </div>
 
     <div class="volume-control" id="volumeControlContainer">
         <div class="volume-button-wrapper" id="volumeButton">
-            <i class="fas fa-volume-up volume-icon"></i>
+            <i class="fas fa-volume-mute volume-icon"></i> <!-- Start muted as sound isn't playing yet -->
         </div>
-        <input
-            type="range"
-            id="volumeSlider"
-            class="volume-slider"
-            min="0"
-            max="1" /* Max volume is 1 */
-            step="0.01"
-            value="0.5"
-        />
+        <div class="volume-slider-container">
+            <input
+                type="range"
+                id="volumeSlider"
+                class="volume-slider"
+                min="0"
+                max="1"
+                step="0.01"
+                value="0" <!-- Start at 0 as sound is initially off/muted -->
+            />
+        </div>
     </div>
 
     <script>
         let batmanSoundAudio;
-        let isMuted = false;
-        let lastVolume = 0.5;
+        let isMuted = true; // Sound starts as muted until user interaction
+        let lastVolume = 0.5; // Default volume when unmuted
 
+        const soundStartOverlay = document.getElementById('soundStartOverlay');
         const volumeControlContainer = document.getElementById('volumeControlContainer');
         const volumeButton = document.getElementById('volumeButton');
         const volumeIcon = volumeControlContainer.querySelector('.volume-icon');
         const volumeSlider = document.getElementById('volumeSlider');
 
-        function initializeSound() {
+        function initializeAndPlaySound() {
             if (!batmanSoundAudio) {
                 batmanSoundAudio = new Audio('ref/misc/batmansound.mp3');
                 batmanSoundAudio.loop = true;
-                batmanSoundAudio.volume = lastVolume; // Set initial volume
                 
-                // Attempt to play. Browsers might block this without prior user interaction.
+                // If was previously unmuted by slider before sound init, use that volume
+                batmanSoundAudio.volume = isMuted ? 0 : lastVolume; 
+                volumeSlider.value = isMuted ? 0 : lastVolume;
+
                 batmanSoundAudio.play().then(() => {
                     console.log("Batman sound started successfully.");
-                    if (volumeIcon) volumeIcon.classList.replace('fa-volume-mute', 'fa-volume-up');
+                    if (!isMuted) {
+                        volumeIcon.classList.remove('fa-volume-mute');
+                        volumeIcon.classList.add('fa-volume-up');
+                    } else {
+                         volumeIcon.classList.remove('fa-volume-up');
+                        volumeIcon.classList.add('fa-volume-mute');
+                    }
                 }).catch(error => {
-                    console.warn("Batman sound autoplay was blocked by the browser. User interaction might be needed.", error);
-                    // Update icon to reflect that sound is not playing or muted initially if autoplay fails
-                    if (volumeIcon) volumeIcon.classList.replace('fa-volume-up', 'fa-volume-mute');
-                    // You might want to add a click listener to the body to start audio on first click
-                    // document.body.addEventListener('click', () => initializeSound(), { once: true });
+                    console.error("Error playing batmanSoundAudio:", error);
+                    isMuted = true; // Ensure state reflects reality
+                    volumeIcon.classList.remove('fa-volume-up');
+                    volumeIcon.classList.add('fa-volume-mute');
+                    volumeSlider.value = 0;
                 });
-            } else if (batmanSoundAudio.paused) {
+            } else if (batmanSoundAudio.paused && !isMuted) {
                 batmanSoundAudio.volume = lastVolume;
                 batmanSoundAudio.play().catch(e => console.error("Error resuming batmanSoundAudio:", e));
-                if (volumeIcon) volumeIcon.classList.replace('fa-volume-mute', 'fa-volume-up');
+                volumeIcon.classList.remove('fa-volume-mute');
+                volumeIcon.classList.add('fa-volume-up');
             }
+            // Hide overlay
+            soundStartOverlay.style.opacity = '0';
+            setTimeout(() => {
+                soundStartOverlay.style.display = 'none';
+            }, 500); // Match CSS transition
         }
+
+        soundStartOverlay.addEventListener('click', initializeAndPlaySound);
 
         if (volumeButton && volumeSlider && volumeIcon) {
             volumeButton.addEventListener('click', () => {
-                if (!batmanSoundAudio && !isMuted) { // If sound not initialized and trying to unmute, init it
-                    initializeSound();
+                if (!batmanSoundAudio) { // If sound not initialized, clicking mute should init and play (muted if was muted)
+                    isMuted = !isMuted; // Toggle intended state
+                    lastVolume = isMuted ? 0 : 0.5; // Set lastVolume based on new state
+                    initializeAndPlaySound();
                     return;
                 }
-                if (!batmanSoundAudio) return; // Don't do anything if sound isn't ready
 
                 isMuted = !isMuted;
                 if (isMuted) {
-                    lastVolume = batmanSoundAudio.volume; // Save current volume before muting
+                    // lastVolume = batmanSoundAudio.volume; // Already saved or default
                     batmanSoundAudio.volume = 0;
-                    volumeIcon.classList.replace('fa-volume-up', 'fa-volume-mute');
+                    volumeIcon.classList.remove('fa-volume-up');
+                    volumeIcon.classList.add('fa-volume-mute');
                     volumeSlider.value = 0;
                 } else {
-                    batmanSoundAudio.volume = lastVolume > 0 ? lastVolume : 0.1; // Restore last volume or a small default
-                    volumeIcon.classList.replace('fa-volume-mute', 'fa-volume-up');
+                    batmanSoundAudio.volume = lastVolume > 0 ? lastVolume : 0.1; // Restore last known volume or a small default
+                    volumeIcon.classList.remove('fa-volume-mute');
+                    volumeIcon.classList.add('fa-volume-up');
                     volumeSlider.value = lastVolume > 0 ? lastVolume : 0.1;
                 }
             });
 
             volumeSlider.addEventListener('input', (e) => {
-                if (!batmanSoundAudio) { // Initialize sound if slider is moved and sound isn't ready
-                    initializeSound(); 
-                }
-                if (!batmanSoundAudio) return;
-
-
                 const newVolume = parseFloat(e.target.value);
-                batmanSoundAudio.volume = newVolume;
-                lastVolume = newVolume; // Update lastVolume when slider changes
+                lastVolume = newVolume; // Always update lastVolume
 
+                if (!batmanSoundAudio) {
+                     isMuted = newVolume === 0;
+                    // Don't initialize sound just by dragging slider if overlay not clicked
+                    // User must click overlay first. Slider will just set the intended volume.
+                    if (newVolume === 0) {
+                        volumeIcon.classList.remove('fa-volume-up');
+                        volumeIcon.classList.add('fa-volume-mute');
+                    } else {
+                        volumeIcon.classList.remove('fa-volume-mute');
+                        volumeIcon.classList.add('fa-volume-up');
+                    }
+                    return;
+                }
+                
+                batmanSoundAudio.volume = newVolume;
                 if (newVolume === 0) {
                     isMuted = true;
-                    volumeIcon.classList.replace('fa-volume-up', 'fa-volume-mute');
+                    volumeIcon.classList.remove('fa-volume-up');
+                    volumeIcon.classList.add('fa-volume-mute');
                 } else {
                     isMuted = false;
-                    volumeIcon.classList.replace('fa-volume-mute', 'fa-volume-up');
+                    volumeIcon.classList.remove('fa-volume-mute');
+                    volumeIcon.classList.add('fa-volume-up');
                 }
             });
         }
         
-        // Initialize sound on page load
+        // Set initial state of volume slider and icon
         document.addEventListener('DOMContentLoaded', () => {
-            // Set initial slider value based on lastVolume
-            if(volumeSlider) volumeSlider.value = lastVolume;
-            initializeSound();
+            volumeSlider.value = isMuted ? 0 : lastVolume;
+            if (isMuted) {
+                volumeIcon.classList.remove('fa-volume-up');
+                volumeIcon.classList.add('fa-volume-mute');
+            } else {
+                volumeIcon.classList.remove('fa-volume-mute');
+                volumeIcon.classList.add('fa-volume-up');
+            }
         });
 
     </script>
