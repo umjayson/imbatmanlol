@@ -263,7 +263,7 @@
         const volumeSlider = document.getElementById('volumeSlider');
         const rainContainer = document.getElementById('rainContainer');
 
-        // Rain Effect Function
+        // Rain Effect Function - Fixed to start immediately
         function createRaindrops() {
             const numberOfDrops = 80; // Number of raindrops
             
@@ -274,7 +274,8 @@
                 // Random positioning and timing
                 const leftPosition = Math.random() * 100;
                 const animationDuration = Math.random() * 1 + 0.8; // 0.8s to 1.8s
-                const animationDelay = Math.random() * 3; // 0s to 3s delay
+                // Use negative delay so raindrops start mid-fall
+                const animationDelay = -(Math.random() * animationDuration); // Negative delay
                 const height = Math.random() * 80 + 40; // 40px to 120px height
                 
                 raindrop.style.left = leftPosition + '%';
