@@ -204,11 +204,23 @@
         </div>
     </div>
 
-    <script>
-         const pageTitles = ["cool", "the best", "mystery", "???"];
+  <script>
+        const pageTitles = ["cool", "the best", "mystery", "???"];
+        
+        // Array of Batman sound files - ADD YOUR SOUND FILES HERE
+        const batmanSounds = [
+            'ref/misc/batmansound.mp3',
+            'ref/misc/batmansound2.mp3'
+        ];
+        
+        // Randomly select a sound file when page loads
+        const selectedBatmanSound = batmanSounds[Math.floor(Math.random() * batmanSounds.length)];
+        console.log('Selected Batman sound:', selectedBatmanSound);
+        
         let batmanSoundAudio;
         let isMuted = true; // Start as "conceptually" muted until overlay click
         let lastVolume = 0.5; // Default volume when unmuted
+        let currentTitleIndex = 0;
 
         const soundStartOverlay = document.getElementById('soundStartOverlay');
         const mainContent = document.getElementById('mainContent');
@@ -219,7 +231,8 @@
 
         function initializeAndPlaySound() {
             if (!batmanSoundAudio) {
-                batmanSoundAudio = new Audio('ref/misc/batmansound.mp3');
+                // Use the randomly selected sound file
+                batmanSoundAudio = new Audio(selectedBatmanSound);
                 batmanSoundAudio.loop = true;
             }
             
@@ -230,7 +243,7 @@
             volumeIcon.classList.add('fa-volume-up');
 
             batmanSoundAudio.play().then(() => {
-                console.log("Batman sound started successfully.");
+                console.log("Batman sound started successfully with:", selectedBatmanSound);
             }).catch(error => {
                 console.error("Error playing batmanSoundAudio:", error);
                 // If play fails, revert to muted state visually
@@ -252,9 +265,6 @@
         if (volumeButton && volumeSlider && volumeIcon) {
             volumeButton.addEventListener('click', () => {
                 if (!batmanSoundAudio) { // If sound not initialized by overlay click yet
-                    // Optionally, you could trigger initializeAndPlaySound here too,
-                    // or just let the overlay be the only way to start.
-                    // For now, let's assume overlay must be clicked first.
                     console.warn("Sound not initialized. Click the main screen first.");
                     return;
                 }
@@ -280,7 +290,7 @@
                 if (!batmanSoundAudio) {
                     // Update intended state even if sound not playing yet
                     isMuted = newVolume === 0;
-                     if (isMuted) {
+                    if (isMuted) {
                         volumeIcon.classList.remove('fa-volume-up');
                         volumeIcon.classList.add('fa-volume-mute');
                     } else {
@@ -307,19 +317,17 @@
         document.addEventListener('DOMContentLoaded', () => {
             volumeSlider.value = lastVolume; // Set slider to default unmuted level
             // Icon starts as mute because sound isn't playing yet.
-            // It will be updated when initializeAndPlaySound is called.
-             volumeIcon.classList.remove('fa-volume-up');
-             volumeIcon.classList.add('fa-volume-mute');
+            volumeIcon.classList.remove('fa-volume-up');
+            volumeIcon.classList.add('fa-volume-mute');
 
-             document.title = pageTitles[currentTitleIndex];
+            document.title = pageTitles[currentTitleIndex];
 
             // Start title cycling
             setInterval(() => {
-              currentTitleIndex = (currentTitleIndex + 1) % pageTitles.length;
-              document.title = pageTitles[currentTitleIndex];
+                currentTitleIndex = (currentTitleIndex + 1) % pageTitles.length;
+                document.title = pageTitles[currentTitleIndex];
             }, 5000); // Change title every 5 seconds
         });
-
     </script>
 </body>
 </html>
