@@ -24,7 +24,61 @@
             justify-content: center;
             min-height: 100vh;
             overflow: hidden; 
+            position: relative;
         }
+
+        /* Rain Effect Styles */
+        .rain {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .rain::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(180deg, transparent 0%, rgba(255,255,255,0.6) 100%);
+            background-size: 1px 100px;
+            animation: rain 0.5s linear infinite;
+            opacity: 0.1;
+        }
+
+        .raindrop {
+            position: absolute;
+            width: 2px;
+            background: linear-gradient(to bottom, transparent, rgba(173, 216, 230, 0.6), transparent);
+            animation: fall linear infinite;
+            opacity: 0.7;
+        }
+
+        @keyframes fall {
+            0% {
+                transform: translateY(-100vh);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh);
+                opacity: 0;
+            }
+        }
+
+        @keyframes rain {
+            0% {
+                background-position: 0% 0%;
+            }
+            100% {
+                background-position: 0% 100px;
+            }
+        }
+
         .content {
             position: relative; 
             z-index: 1;
@@ -83,7 +137,6 @@
             font-size: 18px;
             color: #888;
         }
-
 
         /* Volume Control Styles */
         .volume-control {
@@ -177,6 +230,9 @@
     </style>
 </head>
 <body>
+    <!-- Rain Effect Container -->
+    <div class="rain" id="rainContainer"></div>
+
     <div id="soundStartOverlay">
         <p>🔊</p>
         <span>click</span>
@@ -201,10 +257,11 @@
                 max="1"
                 step="0.01"
                 value="0.5" 
+            />
         </div>
     </div>
 
-  <script>
+    <script>
         const pageTitles = ["cool", "ok", "mystery", "???", "lol"];
         
         // Array of Batman sound files - ADD YOUR SOUND FILES HERE
@@ -228,6 +285,30 @@
         const volumeButton = document.getElementById('volumeButton');
         const volumeIcon = volumeControlContainer.querySelector('.volume-icon');
         const volumeSlider = document.getElementById('volumeSlider');
+        const rainContainer = document.getElementById('rainContainer');
+
+        // Rain Effect Function
+        function createRaindrops() {
+            const numberOfDrops = 100; // Number of raindrops
+            
+            for (let i = 0; i < numberOfDrops; i++) {
+                const raindrop = document.createElement('div');
+                raindrop.className = 'raindrop';
+                
+                // Random positioning and timing
+                const leftPosition = Math.random() * 100;
+                const animationDuration = Math.random() * 1 + 0.5; // 0.5s to 1.5s
+                const animationDelay = Math.random() * 2; // 0s to 2s delay
+                const height = Math.random() * 100 + 50; // 50px to 150px height
+                
+                raindrop.style.left = leftPosition + '%';
+                raindrop.style.height = height + 'px';
+                raindrop.style.animationDuration = animationDuration + 's';
+                raindrop.style.animationDelay = animationDelay + 's';
+                
+                rainContainer.appendChild(raindrop);
+            }
+        }
 
         function initializeAndPlaySound() {
             if (!batmanSoundAudio) {
@@ -327,6 +408,9 @@
                 currentTitleIndex = (currentTitleIndex + 1) % pageTitles.length;
                 document.title = pageTitles[currentTitleIndex];
             }, 5000); // Change title every 5 seconds
+
+            // Initialize rain effect
+            createRaindrops();
         });
     </script>
 </body>
